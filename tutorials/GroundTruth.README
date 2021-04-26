@@ -1,0 +1,113 @@
+====================================================================
+ An In-Depth Analysis of Disassembly on Full-Scale x86/x64 Binaries
+ Ground truth structure and format
+====================================================================
+
+1. Overview and Directory/Filename Structure
+++++++++++++++++++++++++++++++++++++++++++++
+
+The ground truth for all binaries in our data set consists of a series of map files
+(one per binary), that for each binary describes the type of each byte in the various 
+sections. The ground truth files are found in the eval directory, under the 'truth'
+subdirectories for each part of the data set. For instance, the ground truth files for
+the SPEC C benchmarks, compiled with gcc on x64 are found in:
+
+eval/SPEC/truth/gcc510-64/C/*.truth.map
+
+The name of each file consists of the name of the binary, followed by optimization level 
+and any special properties (statically linked, or link-time optimized with -flto). The
+compiler name is not repeated, as it follows from the directory structure.
+
+The ground truth files are designed to be easily readable by both human and machine.
+The map files are based on DWARF and symbol information, as described in our paper. 
+As an extra refinement of the results, we run a recursive disassembly of each function 
+and entry point found using DWARF/symbol data, parsing only guaranteed correct instructions
+(i.e., we stop for things like jump types where we're not 100% sure how to proceed). This 
+provides a very conservative ground truth. Though the ground truth is not guaranteed to be
+complete (due to conservativeness), in practice we achieve very high coverage (99+%).
+
+In addition to the binary ground truth files, we also include source level ground truth.
+The source level ground truth files can be found in the 'truth/llvminfo' subdirectories and
+are, as the name implies, generated using a custom LLVM pass. The sections below describe 
+the binary ground truth files, except where noted otherwise.
+
+2. Ground Truth File Format
++++++++++++++++++++++++++++
+
+2.1 Instructions
+----------------
+Instructions (and data bytes) are listed per section. Each section is denoted by a header 
+showing the section name, base address and size, for instance:
+
+<section .text, addr 0x0000000000400540, size 1918788>
+
+At the end of each section is a footer denoting the percentage of bytes for which the type
+was determined with certainty.
+
+In between the header and footer is a list of lines, one per instruction, which describes
+the properties of all bytes belonging to that instruction as a sequence of letters. Lowercase 
+letters denote suspected types, while their uppercase equivalents denote confirmed types.
+The following letters are used to describe byte properties (multiple properties can be
+grouped using square brackets, see the example below):
+ 
+  d - data
+  c - code
+  i - instruction boundary
+    Note that if a byte is an instruction boundary (start of an instruction),
+    this implies that it is a code byte
+  o - instruction boundary (start of overlapping instruction)
+  b - basic block start
+    Basic block boundaries are not always explicitly listed, as they can usually
+    be found by parsing the instruction/function listing into a control-flow graph
+  f - function start
+  e - program/binary entry point
+  r - function end (return, tail call, etc.)
+  j - control-flow instruction (jmp, call, ret, ...)
+  x - crossref/call instruction
+  n - NOP or other function padding
+
+Each instruction line has the following format, showing the address of the instruction 
+followed by the properties of its bytes:
+
+  @0x0100: [CIFB]CCCC
+  @0x0200: dddDDDDDDDDDD
+
+In the example, there is an instruction at address 0x0100, consisting of five bytes, of
+which the first is also an instruction boundary, and a function/basic block start.
+At address 0x0200, there is a series of data bytes (some certain, others not). 
+
+2.2 Functions and function signatures
+-------------------------------------
+Elaborate function information is listed on dedicated lines in each ground truth file.
+These lines start with an 'F', and can be found by grepping for 'F ' (an F followed 
+by a space). Each line is formatted as follows:
+
+F <function address> <size> <name> (..) <calling convention> <parameter list/prototype> <properties>
+
+Some information may be left out if it is unavailable, and address/size information may 
+be null.
+
+Important note: we use a custom LLVM pass to find function signatures and calling conventions. 
+Therefore, the information on calling conventions should not be relied upon in ground truth 
+files for compilers other than llvm/clang.  
+
+2.3 Control-Flow Graph and callgraph
+------------------------------------
+The CFG and callgraph ground truth can be constructed from the ground truth on instructions
+and functions, and is therefore not explicitly duplicated in the map files.
+
+2.4 Switches
+------------
+We also provide source level switch information as part of the llvminfo ground truth files.
+Binary level information can be obtained from this by coupling the source level switch information
+with the DWARF line mapping table of each binary.
+
+Switch information is given on lines starting with 'SW'. Each line is formatted as follows:
+
+SW  <path>  <start-line>  <default-line>  [<case-line> ...]
+
+The first block of information shows the path to the compilation unit source file in which the 
+switch is defined. Next, the first source line number of the switch is listed, followed by the 
+line number of the default case block. Finally, there is line information for all case blocks 
+in the switch.
+

@@ -1,0 +1,62 @@
+====================================================================
+ An In-Depth Analysis of Disassembly on Full-Scale x86/x64 Binaries
+ Usage Instructions
+====================================================================
+
+1. Generating the Binaries
+++++++++++++++++++++++++++
+
+Binaries for glibc and our server test cases are included in this virtual machine.
+Due to the licensing restrictions of SPEC CPU2006, we cannot supply pre-compiled
+binaries for our SPEC test cases. However, by inserting your own copy of SPEC CPU2006
+and following the steps below, SPEC binaries can be generated to match the ground truth
+and result files we supply.
+
+1) Install SPEC CPU2006 version 1.2 (see http://spec.org/cpu2006/Docs/install-guide-unix.html)
+  1.1) Mount the SPEC CPU2006 DVD or iso
+         mount -t iso9660 -o ro,exec </path/to/SPEC.iso> /mnt
+  1.2) Copy contents of SPEC DVD to SPEC/ directory
+         cp -R /mnt/* SPEC/
+  1.3) Install SPEC
+         If needed, chown and/or chmod all files in the SPEC directory first
+         cd SPEC && ./install.sh && cd ..
+  1.4) Copy all config files from SPEC-config to SPEC/config
+         cp SPEC-config/* SPEC/config
+
+2) Generate the SPEC binaries for gcc and clang
+     cd eval/SPEC/truth
+     ./generate-binaries.sh
+   This will take some time
+
+  2.1) Note that this creates several directories for each compiler:
+    bin/C bin/C++: Binaries with full DWARF information
+    bin/symbols/C bin/symbols/C++: Binaries without DWARF info, but with regular symbols
+    bin/stripped/C bin/stripped/C++: Binaries without any symbolic information
+
+3) Generate the SPEC binaries for Visual Studio 2015
+     See Windows.README
+
+2. Ground Truth Files
++++++++++++++++++++++
+
+See GroundTruth.README
+
+3. Disassembly Result Files
++++++++++++++++++++++++++++
+
+See Disasm.README
+
+4. Troubleshooting
+++++++++++++++++++
+
+Q: The generate-binaries.sh script fails to copy one of the generated binaries
+   because it is not found.
+
+A: Typically this is because the compilation process was aborted at some point,
+   and the SPEC build directory expected by generate-binaries.sh is still locked,
+   causing SPEC to build to a different directory. You can remove the lock by going
+   to the build directory of the offending application and editing the lock file.
+   For instance:
+     cd ~/disasm/SPEC/benchspec/CPU2006/400.perlbench/build
+     echo -n > list
+

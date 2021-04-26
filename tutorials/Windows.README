@@ -1,0 +1,88 @@
+====================================================================
+ An In-Depth Analysis of Disassembly on Full-Scale x86/x64 Binaries
+ Windows Compilation Instructions
+====================================================================
+
+1. Overview
++++++++++++
+
+To generate the SPEC CPU2006 ground truth binaries for Windows, a copy
+of Visual Studio 2015 is required, which we cannot supply in this virtual
+machine. We therefore provide detailed version information for the instances
+of Visual Studio and Windows which we used for our results.
+
+2. Windows Version Information
+++++++++++++++++++++++++++++++
+
+Windows 10, 1511
+OS version 10586.36
+
+3. Visual Studio Version Information
+++++++++++++++++++++++++++++++++++++
+
+Microsoft Visual Studio Enterprise 2015
+Version 14.0.23107.0 D14REL
+Microsoft .NET Framework
+Version 4.6.01055
+
+Installed Version: Enterprise
+
+Architecture and Modeling Tools   00322-90054-05191-AA191
+Microsoft Architecture and Modeling Tools
+    
+UML® and Unified Modeling Language™ are trademarks or registered trademarks of the Object Management Group, Inc. in the United States and other countries.
+
+Visual Basic 2015   00322-90054-05191-AA191
+Microsoft Visual Basic 2015
+
+Visual C# 2015   00322-90054-05191-AA191
+Microsoft Visual C# 2015
+
+Visual C++ 2015   00322-90054-05191-AA191
+Microsoft Visual C++ 2015
+
+Application Insights Tools for Visual Studio Package   1.0
+Application Insights Tools for Visual Studio
+
+Common Azure Tools   1.5
+Provides common services for use by Azure Mobile Services and Microsoft Azure Tools.
+
+GenerateUnitTest   1.0
+Generates unit test code for methods in classes under test.
+
+GitHub.VisualStudio   1.0
+A Visual Studio Extension that brings the GitHub Flow into Visual Studio.
+
+Microsoft Azure Mobile Services Tools   1.4
+Microsoft Azure Mobile Services Tools
+
+Microsoft Code Digger   0.9
+Microsoft Code Digger
+
+Microsoft MI-Based Debugger   1.0
+Provides support for connecting Visual Studio to MI compatible debuggers
+
+Microsoft.Pex.VisualStudio   1.0
+Pex
+
+NuGet Package Manager   3.0.0
+NuGet Package Manager in Visual Studio. For more information about NuGet, visit http://docs.nuget.org/.
+
+PreEmptive Analytics Visualizer   1.2
+Microsoft Visual Studio extension to visualize aggregated summaries from the PreEmptive Analytics product.
+
+Python Tools for Visual Studio   2.2.30718.00
+Python Tools for Visual Studio provides IntelliSense, projects, templates, Interactive windows, and other support for Python developers.
+
+Python Tools for Visual Studio - Django Integration   2.2.30718.00
+Provides templates and integration for the Django web framework.
+
+Python Tools for Visual Studio - Profiling Support   2.2.30718.00
+Profiling support for Python projects.
+
+Visual C++ for Cross Platform Mobile Development   1.0
+Visual C++ for Cross Platform Mobile Development
+
+Visual C++ for Cross Platform Mobile Development   1.0
+Visual C++ for Cross Platform Mobile Development
+

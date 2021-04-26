@@ -1,0 +1,91 @@
+====================================================================
+ An In-Depth Analysis of Disassembly on Full-Scale x86/x64 Binaries
+ Raw disassembly statistics
+====================================================================
+
+1. Directory and filename structure
++++++++++++++++++++++++++++++++++++
+
+1.1 Test suite components
+-------------------------
+eval/SPEC: raw results for SPEC CPU2006 C and C++ benchmarks
+    This includes results for gcc 5.1.1, llvm/clang 3.7.0, and Visual Studio 2015 at O0-O3
+    Results for size optimization, static linking, and link-time optimization are also included
+
+eval/servers: raw results for the set of servers included in the test suite
+    This includes results for gcc 5.1.1 and llvm/clang 3.7.0, at the servers' default optimization levels
+
+eval/glibc-2.22: raw results for the glibc-2.22 library
+    This includes results for gcc 5.1.1 64-bit at glibc's default optimization level (O2)
+
+1.2 Result files
+----------------
+For each of the above, we include (where applicable) directories with the following names and contents:
+    callgraph: results on callgraph coverage
+    cfg      : results on CFG coverage
+    ins      : results on instruction coverage
+    funcs    : results on function start detection
+    sigs     : results on signature detection
+    switch   : results on coverage of switch/case blocks
+               (not included for glibc, as glibc is tailored to gcc, and can thus not be covered
+                by our LLVM analysis pass)
+    weird    : statistics on the prevalence of complex cases
+    truth    : tested binaries and ground truth files (see also README)
+
+For SPEC and the servers, we include results for both stripped binaries and binaries with symbols.
+This can be seen from the names of the result files. The names of the result files also show whether
+the file applies to C/C++, is for a statically linked or link-time optimized (flto) binary, and the
+compiler and disassembler to which the results apply.
+
+2. Legend for result file columns
++++++++++++++++++++++++++++++++++
+
+Legend for the relevant result file columns referenced in the paper (alphabetical order):
+  |argc_correct|       : function signatures where the disassembler correctly resolved the argument count
+  |bounds|             : number of ground truth items
+  |BB_end|             : basic blocks in the ICFG for which the disassembler found the end instruction
+  |BB_full|            : completely covered basic blocks in the ICFG found by the disassembler
+  |BB_overlap|         : overlapping basic blocks
+  |BB_start|           : basic blocks in the ICFG for which the disassembler found the start instruction
+  |Call_direct|        : correctly resolved direct calls found by the disassembler
+  |Call_indirect|      : correctly resolved indirect calls found by the disassembler
+  |Cases|              : number of switch cases in the ground truth
+  |CC_correct|         : functions for which the disassembler correctly guessed the calling convention
+  |CC_guessed|         : functions for which the disassembler guessed the calling convention
+  |d|                  : difference between number of ground truth items and number of disassembled items
+  |E_direct|           : direct edges in the ground truth
+  |E_indirect|         : indirect edges in the ground truth
+                         (not relevant to our experiments, as these are not resolved by the tested disassemblers)
+  |funcs|              : functions found by the disassembler (see also |ins|)
+  |FN|                 : number of ground truth functions (for the function start results), or false negatives (in all other results)
+  |FN_nop|             : false negatives due to padding/alignment code (such as NOPs)
+  |FN_start|           : function starts detected by the disassembler
+  |FP|                 : false positives
+  |FP_data|            : false positives due to inline data
+  |Flow_direct|        : direct control flow transfers between basic blocks found by the disassembler
+  |Flow_indirect|      : indirect control flow transfers between basic blocks found by the disassembler
+  |F-score|            : F-score metric
+  |ins|                : instructions found by the disassembler
+                         (may exceed the ground truth number due to instructions in the PLT which are not counted in our tests)
+  |ins_overlap|        : overlapping instructions
+  |multi-entry_jmps|   : jumps to a multi-entry function
+  |multi-entry_targets|: distinct targets of multi-entry jumps
+  |nsigs|              : number of function signatures in the ground truth
+  |nz_argc_correct|    : non-empty function signatures where the disassembler correctly resolved the argument count
+  |out|                : disassembled items outside of the ground truth range (for instance, PLT instructions), and therefore NOT counted in our results
+  |precision|          : precision metric (as used to compute the F-score)
+  |recall|             : recall metric (as used to compute the F-score)
+  |sigs_correct|       : cases where the disassembler correctly guessed both the calling convention and argument count
+  |sigs_guessed|       : functions for which the disassembler guessed a signature (parameter list and return type)
+  |SW|                 : number of switches in the ground truth
+  |SW_cases|           : switch/case blocks covered by the disassembler
+  |SW_default|         : switches for which the disassembler found the default case block
+  |SW_full|            : switches fully resolved by the disassembler (all cases coverered)
+  |SW_missed|          : switches completely missed by the disassembler
+  |SW_partial|         : switches only partially resolved by the disassembler
+  |SW_start|           : switches for which the disassembler found the start basic block
+  |tailcall_jmps|      : tailcalls (i.e., jumps to another function)
+  |tailcall_targets|   : distinct targets of tailcalls
+  |TP|                 : true positives
+  |V|                  : number of vertices (basic blocks) in the ground truth CFG
+
